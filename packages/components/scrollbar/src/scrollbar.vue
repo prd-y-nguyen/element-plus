@@ -80,6 +80,8 @@ const ns = useNamespace('scrollbar')
 let stopResizeObserver: (() => void) | undefined = undefined
 let stopWrapResizeObserver: (() => void) | undefined = undefined
 let stopResizeListener: (() => void) | undefined = undefined
+let stopTransitionListener: (() => void) | undefined = undefined
+let stopAnimationListener: (() => void) | undefined = undefined
 let wrapScrollTop = 0
 let wrapScrollLeft = 0
 let direction = '' as ScrollbarDirection
@@ -224,10 +226,14 @@ watch(
       stopResizeObserver?.()
       stopWrapResizeObserver?.()
       stopResizeListener?.()
+      stopTransitionListener?.()
+      stopAnimationListener?.()
     } else {
       ;({ stop: stopResizeObserver } = useResizeObserver(resizeRef, update))
       ;({ stop: stopWrapResizeObserver } = useResizeObserver(wrapRef, update))
       stopResizeListener = useEventListener('resize', update)
+      stopTransitionListener = useEventListener(wrapRef, 'transitionend', update)
+      stopAnimationListener = useEventListener(wrapRef, 'animationend', update)
     }
   },
   { immediate: true }
